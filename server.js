@@ -9,6 +9,7 @@ const myStorage = multer.diskStorage({
         cb(null, 'C:/food-images/');
     },
 
+    //filenameがタイムスタンプと一緒に管理されるように
     filename: (req, file, cb) => {
         const foodName = req.body.foodName || 'unknown';
 
@@ -21,8 +22,13 @@ const myStorage = multer.diskStorage({
 const upload = multer({ storage: myStorage });
 
 // 送られてきたファイルの受信
-app.post('/api/upload-food', upload.single('image'), (req, res) => {
+app.post('http://localhost:3000/api/upload-food', upload.single('photo'), (req, res) => {
     console.log(`originalname: ${req.file.originalname}`);
     console.log(`path: ${req.file.path}`);
     res.json({ok : true, message : "received image"});
 })
+
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`number of Port: ${PORT}`);
+});
