@@ -22,7 +22,7 @@ const myStorage = multer.diskStorage({
 const upload = multer({ storage: myStorage });
 
 // 送られてきたファイルの受信
-app.post('http://localhost:3000/api/upload-food', upload.single('photo'), (req, res) => {
+app.post('/api/upload-food', upload.single('photo'), (req, res) => {
     console.log(`originalname: ${req.file.originalname}`);
     console.log(`path: ${req.file.path}`);
     res.json({ok : true, message : "received image"});
