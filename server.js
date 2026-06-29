@@ -12,7 +12,9 @@ const myStorage = multer.diskStorage({
     filename: (req, file, cb) => {
         const foodName = req.body.foodName || 'unknown';
 
-        cb(null, `${foodName}.png`);
+        const uniqueSuffix = DataTransfer.now();
+
+        cb(null, `${foodName}_${uniqueSuffix}.png`);
     }
 });
 
