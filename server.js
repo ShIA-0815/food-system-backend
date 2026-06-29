@@ -2,6 +2,8 @@ const multer = require('multer');
 const express = require('express');
 const app = express();
 const path = require('path');
+const cors = require('cors');
+app.use(cors());
 
 // uploadされた写真の保存先（今は仮で自分のPC直下）
 const myStorage = multer.diskStorage({
@@ -13,7 +15,7 @@ const myStorage = multer.diskStorage({
     filename: (req, file, cb) => {
         const foodName = req.body.foodName || 'unknown';
 
-        const uniqueSuffix = DataTransfer.now();
+        const uniqueSuffix = Data.now();
 
         cb(null, `${foodName}_${uniqueSuffix}.png`);
     }
