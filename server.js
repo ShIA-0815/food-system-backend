@@ -3,15 +3,15 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const cors = require('cors');
-app.use(cors());
 
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// uploadされた写真の保存先（今は仮で自分のPC直下）
+// uploadされた写真を同じディレクトリに保存
 const myStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'C:/food-images/');
+        cb(null, 'uploads/');
     },
 
     //filenameがタイムスタンプと一緒に管理されるように
@@ -33,7 +33,8 @@ app.post('/api/upload-food', upload.single('image'), (req, res) => {
     res.json({ok : true, message : "received image"});
 })
 
-const PORT = 3000;
+// PORT開放
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`number of Port: ${PORT}`);
 });
