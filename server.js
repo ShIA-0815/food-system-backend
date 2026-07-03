@@ -5,6 +5,9 @@ const path = require('path');
 const cors = require('cors');
 app.use(cors());
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // uploadされた写真の保存先（今は仮で自分のPC直下）
 const myStorage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -15,7 +18,7 @@ const myStorage = multer.diskStorage({
     filename: (req, file, cb) => {
         const foodName = req.body.foodName || 'unknown';
 
-        const uniqueSuffix = Data.now();
+        const uniqueSuffix = Date.now();
 
         cb(null, `${foodName}_${uniqueSuffix}.png`);
     }
@@ -24,7 +27,7 @@ const myStorage = multer.diskStorage({
 const upload = multer({ storage: myStorage });
 
 // 送られてきたファイルの受信
-app.post('/api/upload-food', upload.single('photo'), (req, res) => {
+app.post('/api/upload-food', upload.single('image'), (req, res) => {
     console.log(`originalname: ${req.file.originalname}`);
     console.log(`path: ${req.file.path}`);
     res.json({ok : true, message : "received image"});
