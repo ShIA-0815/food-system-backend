@@ -18,6 +18,7 @@ const pool = new Pool({
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // 接続テストの実行
 pool.connect(async (err, client, release) => {
@@ -86,6 +87,21 @@ app.post('/api/upload-food', upload.single('image'), async (req, res) => {
 
     } catch (error) {
         console.error('saved-error:', error.stack);
+        res.status(500).json({ ok: false, message: "server error" });
+    }
+});
+
+app.get('/api/get-foods', async (req, res) => {
+    try {
+        const queryText = 'SELECT * FROM foods ORDER BY created_at DESC';
+        const result = await pool.query(queryText);
+
+        res.json({
+            ok: true,
+            data: result.rows
+        });
+    } catch (error) {
+        console.error('failed to get foods:', error.stack);
         res.status(500).json({ ok: false, message: "server error" });
     }
 });
