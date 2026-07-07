@@ -20,6 +20,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// PORT開放
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`number of Port: ${PORT}`);
+});
+
 // 接続テストの実行
 pool.connect(async (err, client, release) => {
     if (err) {
@@ -106,8 +112,3 @@ app.get('/api/get-foods', async (req, res) => {
     }
 });
 
-// PORT開放
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`number of Port: ${PORT}`);
-});
