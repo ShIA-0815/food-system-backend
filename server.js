@@ -41,7 +41,9 @@ pool.connect(async (err, client, release) => {
             CREATE TABLE IF NOT EXISTS foods (
                 id SERIAL PRIMARY KEY,
                 food_name TEXT NOT NULL,
+                weight INTEGER,
                 image_path TEXT NOT NULL,
+                expiration_date DATE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         `);
@@ -80,12 +82,14 @@ const upload = multer({ storage: myStorage });
 app.post('/api/upload-food', upload.single('image'), async (req, res) => {
     try {
         const foodName = req.body.foodName || 'unknown';
+        const weight = req.body.weight ? parseInt(req.body.weight) : null;
+        const expirationDate = req.body.expirationDate || null;
         const imagePath = req.file ? req.file.path : '';  // 保存されたファイルのパス（uploads/〇〇.png）
 
-        console.log(`receive data-name: ${foodName}, Path: ${imagePath}`);
+        console.log(`receive data-name: ${foodName}, Weight: ${weight}, Exp: ${expirationDate}, Path: ${imagePath}`);
 
-        const queryText = 'INSERT INTO foods (food_name, image_path) VALUES ($1, $2) RETURNING *';
-        const values = [foodName, imagePath];
+        const queryText = 'INSERT INTO foods (food_name, weight, image_path, expiration_date) VALUES ($1, $2, $3, $4) RETURNING *';
+        const values = [foodName, weight, imagePath, expirationDate];
 
         const result = await pool.query(queryText, values);
 
