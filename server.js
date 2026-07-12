@@ -35,6 +35,9 @@ pool.connect(async (err, client, release) => {
     
     // テーブルの自動作成
     try {
+        await client.query('DROP TABLE IF EXISTS foods;');
+        console.log('dropped old table');
+
         await client.query(`
             CREATE TABLE IF NOT EXISTS foods (
                 id SERIAL PRIMARY KEY,
