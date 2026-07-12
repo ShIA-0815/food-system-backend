@@ -3,7 +3,9 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const cors = require('cors');
-const { Pool } = require('pg');
+const { Pool } = require('pg'); // PostgreDB(Renderと結びついてるDB)
+const cloudinary = require('cloudinary').v2; // Cloudinary(外部の画像保存用クラウド)
+const {CloudinaryStorage} = require('multer-storage-cloudinary');
 
 // DBのURLに自動で切り替える
 const connectionString = process.env.DATABASE_URL || 'postgresql://food_db_pnir_user:JoBrkfDO8DYjORfLk3NWwMEfCEnoB9FL@dpg-d95f5aflk1mc73cisek0-a.singapore-postgres.render.com/food_db_pnir';
@@ -54,20 +56,24 @@ pool.connect(async (err, client, release) => {
     }
 });
 
+// Cloudinaryの接続設定
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-// uploadされた写真を同じディレクトリに保存
+// uploadされた写真をCloudinaryに保存
 const myStorage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-
-    //filenameがタイムスタンプと一緒に管理されるように
-    filename: (req, file, cb) => {
-        const foodName = req.body.foodName || 'unknown';
-
-        const uniqueSuffix = Date.now();
-
-        cb(null, `${foodName}_${uniqueSuffix}.png`);
+    cloudinary: cloudinary,
+    params: {
+        folder: 'uploads-images',
+        allowed_formats: ['jpg', 'png', 'jpeg'],
+        public_id: (req, file) => {
+            const foodName = req.body.foodName || 'unknown';
+            const uniqueSuffix = DataTransfer.now();
+            return `${foodName}_${uniqueSuffix}`;
+        }
     }
 });
 
