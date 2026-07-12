@@ -61,14 +61,14 @@ cloudinary.config({
 });
 
 // uploadされた写真をCloudinaryに保存
-const myStorage = multer.diskStorage({
+const myStorage = new CloudinaryStorage({
     cloudinary: cloudinary,
     params: {
         folder: 'uploads-images',
         allowed_formats: ['jpg', 'png', 'jpeg'],
         public_id: (req, file) => {
             const foodName = req.body.foodName || 'unknown';
-            const uniqueSuffix = DataTransfer.now();
+            const uniqueSuffix = Date.now(); 
             return `${foodName}_${uniqueSuffix}`;
         }
     }
