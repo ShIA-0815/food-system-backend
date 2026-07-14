@@ -132,3 +132,12 @@ app.get('/api/get-foods', async (req, res) => {
     }
 });
 
+app.post('/api/reset', async (req, res) => {
+    try {
+        await Food.deleteMany({});
+
+        res.json({ message: "All reset"});
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
