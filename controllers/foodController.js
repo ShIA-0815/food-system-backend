@@ -40,6 +40,17 @@ exports.getFoods = async (req, res) => {
     try {
         const userId = req.user.uid;
 
+        const sortBy = req.query.sort || 'expiry';
+
+        let sortOption = {};
+
+        if (sortBy === 'created') {
+            sortOption = {created_at: -1};
+        } else if (sortBy === 'name') {
+            sortOption = { food_name: 1 };
+        } else {
+            sortOption = { expiration_date: 1 };
+        }
         const foods = await Food.find({ userId: userId }).sort({ created_at: -1 });
         res.json({
             ok: true,
