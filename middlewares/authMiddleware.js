@@ -3,9 +3,11 @@ const path = require('path');
 
 const serviceAccount = require(path.join(__dirname, '../serviceAccountKey.json'));
 
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
+if (!admin.apps.length) {
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+    });
+}
 
 // 認証システム
 const checkAuth = async (req, res, next) => {
