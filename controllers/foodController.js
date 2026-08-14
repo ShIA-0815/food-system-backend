@@ -3,6 +3,15 @@ const Food = require('../models/Food');
 // 食材の保存（アップロード）
 exports.uploadFood = async (req, res) => {
     try {
+        const userId = req.user?.uid;
+
+        if (!userId) {
+            return res.status(401).json({
+                ok: false,
+                message: 'User ID not found'
+            })
+        }
+
         const foodName = req.body.foodName || 'unknown';
         const weight = req.body.weight ? parseInt(req.body.weight) : null;
         const expirationDate = req.body.expiryDate || null;
@@ -10,8 +19,6 @@ exports.uploadFood = async (req, res) => {
         const userId = req.user.uid;
 
         console.log(`receive data-name: ${foodName}, Weight: ${weight}, Exp: ${expirationDate}, Path: ${imagePath}, userId: ${userId}`);
-
-        
 
         const newFood = new Food({
             userId: userId,
