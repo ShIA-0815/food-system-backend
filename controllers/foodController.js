@@ -7,10 +7,14 @@ exports.uploadFood = async (req, res) => {
         const weight = req.body.weight ? parseInt(req.body.weight) : null;
         const expirationDate = req.body.expiryDate || null;
         const imagePath = req.file ? req.file.path : '';
+        const userId = req.user.uid;
 
-        console.log(`receive data-name: ${foodName}, Weight: ${weight}, Exp: ${expirationDate}, Path: ${imagePath}`);
+        console.log(`receive data-name: ${foodName}, Weight: ${weight}, Exp: ${expirationDate}, Path: ${imagePath}, userId: ${userId}`);
+
+        
 
         const newFood = new Food({
+            userId: userId,
             food_name: foodName,
             weight: weight,
             image_path: imagePath,
@@ -34,7 +38,9 @@ exports.uploadFood = async (req, res) => {
 // 食材一覧の取得
 exports.getFoods = async (req, res) => {
     try {
-        const foods = await Food.find().sort({ created_at: -1 });
+        const userId = req.user.uid;
+
+        const foods = await Food.find({ userId: userId }).sort({ created_at: -1 });
         res.json({
             ok: true,
             data: foods
@@ -48,7 +54,8 @@ exports.getFoods = async (req, res) => {
 // 全データのリセット
 exports.resetFoods = async (req, res) => {
     try {
-        await Food.deleteMany({});
+        const userId = req.user.uid;
+        await Food.deleteMany({ userId: userId });
         res.json({ message: "All reset" });
     } catch (error) {
         res.status(500).json({ error: error.message });
