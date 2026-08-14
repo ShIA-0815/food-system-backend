@@ -16,7 +16,6 @@ exports.uploadFood = async (req, res) => {
         const weight = req.body.weight ? parseInt(req.body.weight) : null;
         const expirationDate = req.body.expiryDate || null;
         const imagePath = req.file ? req.file.path : '';
-        const userId = req.user.uid;
 
         console.log(`receive data-name: ${foodName}, Weight: ${weight}, Exp: ${expirationDate}, Path: ${imagePath}, userId: ${userId}`);
 
