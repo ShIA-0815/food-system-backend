@@ -44,7 +44,11 @@ exports.uploadFood = async (req, res) => {
 // 食材一覧の取得
 exports.getFoods = async (req, res) => {
     try {
-        const userId = req.user.uid;
+        const userId = req.user?.uid;
+        
+        if (!userId) {
+            return res.status(401).json({ ok: false, message: 'User ID not found' });
+        }
 
         const sortBy = req.query.sort || 'expiry';
 
@@ -57,7 +61,7 @@ exports.getFoods = async (req, res) => {
         } else {
             sortOption = { expiration_date: 1 };
         }
-        const foods = await Food.find({ userId: userId }).sort({ created_at: -1 });
+        const foods = await Food.find({ userId: userId }).sort(sortOption);
         res.json({
             ok: true,
             data: foods

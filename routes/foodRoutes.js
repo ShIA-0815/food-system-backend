@@ -8,9 +8,9 @@ const checkAuth = require('../middlewares/authMiddleware');
 router.post('/upload-food', checkAuth, upload.single('image'), foodController.uploadFood);
 
 // GET: 食材一覧取得
-router.get('/get-foods', foodController.getFoods);
+router.get('/get-foods', checkAuth, foodController.getFoods);
 
 // POST: リセット
-router.post('/reset', foodController.resetFoods);
+router.post('/reset', checkAuth, foodController.resetFoods);
 
 module.exports = router;
