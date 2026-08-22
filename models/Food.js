@@ -6,6 +6,7 @@ const foodSchema = new mongoose.Schema({
     weight: { type: Number, default: null },
     image_path: { type: String, required: true },
     expiration_date: { type: String, default: null },
+    notifyDaysBefore: { type: Number, default: 1 },
     created_at: { type: Date, default: Date.now }
 });
 

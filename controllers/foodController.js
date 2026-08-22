@@ -15,6 +15,7 @@ exports.uploadFood = async (req, res) => {
         const foodName = req.body.foodName || 'unknown';
         const weight = req.body.weight ? parseInt(req.body.weight) : null;
         const expirationDate = req.body.expiryDate || null;
+        const notifyDaysBefore = req.body.notifyDaysBefore ? parseInt(req.body.notifyDaysBefore) : 1;
         const imagePath = req.file ? req.file.path : '';
 
         console.log(`receive data-name: ${foodName}, Weight: ${weight}, Exp: ${expirationDate}, Path: ${imagePath}, userId: ${userId}`);
@@ -24,7 +25,8 @@ exports.uploadFood = async (req, res) => {
             food_name: foodName,
             weight: weight,
             image_path: imagePath,
-            expiration_date: expirationDate
+            expiration_date: expirationDate,
+            notifyDaysBefore: notifyDaysBefore
         });
 
         const savedFood = await newFood.save();
