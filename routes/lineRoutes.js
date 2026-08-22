@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const line = require('@line/bot-sdk');
+const { messagingApi, middleware } = require('@line/bot-sdk');
 const User = require('../models/User');
 
 const config = {
@@ -8,10 +8,12 @@ const config = {
     channelSecret: process.env.LINE_CHANNEL_SECRET,
 };
 
-const client = new line.Client(config);
+const client = new messagingApi.MessagingApiClient({
+    channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN
+});
 
 // LINEからのメッセージ受信用
-router.post('/webhook', line.middleware(config), async (req, res) => {
+router.post('/webhook', middleware(config), async (req, res) => {
     try {
         const events = req.body.events;
         await Promise.all(events.map(handleEvent));
@@ -28,22 +30,46 @@ async function handleEvent(event) {
     }
 
     const userText = event.message.text.trim();
-    const lineUserId = event.source.userId;
+    const lineUserId = event.source.userId; // LINE側のユーザーID
 
-    // 送られてきたテキストが4桁の数字（連携コード）か判定
+    // 💡 4桁の数字が送られてきた場合（連携コード判定）
     if (/^\d{4}$/.test(userText)) {
-        // DBからその連携コードを持つFirebaseユーザーを検索してLINE IDを保存
-        // const user = await User.findOneAndUpdate({ linkCode: userText }, { lineUserId: lineUserId });
+        try {
+            // DBからその連携コードを持つユーザーを探して lineUserId を保存
+            const user = await User.findOneAndUpdate(
+                { linkCode: userText },
+                { lineUserId: lineUserId, linkCode: null } // 連携後はコードを消去
+            );
 
-        return client.replyMessage(event.replyToken, {
-            type: 'text',
-            text: `連携コード「${userText}」を受け取りました！アカウント連携を完了します。`
-        });
+            if (user) {
+                return client.replyMessage({
+                    replyToken: event.replyToken,
+                    messages: [{
+                        type: 'text',
+                        text: 'アカウントの連携が完了しました。賞味期限の通知をここでお知らせします。'
+                    }]
+                });
+            } else {
+                return client.replyMessage({
+                    replyToken: event.replyToken,
+                    messages: [{
+                        type: 'text',
+                        text: '連携コードが見つからないか、期限が切れています。Web画面で再発行してください。'
+                    }]
+                });
+            }
+        } catch (error) {
+            console.error('連携エラー:', error);
+        }
     }
 
-    return client.replyMessage(event.replyToken, {
-        type: 'text',
-        text: 'アプリ画面に表示されている4桁の連携コードを送信してください!'
+    // 通常のメッセージ返信
+    return client.replyMessage({
+        replyToken: event.replyToken,
+        messages: [{
+            type: 'text',
+            text: `受信しました: ${userText}\n\n連携を行う場合は、Web画面に表示されている4桁のコードを送信してください!`
+        }]
     });
 }
 
