@@ -17,6 +17,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ルーティング適用 (/api/upload-food や /api/get-foods に繋がる)
 app.use('/api', foodRoutes);
+app.use('/api/line', require('./routes/lineRoutes'));
 
 // PORT開放
 const PORT = process.env.PORT || 3000;
