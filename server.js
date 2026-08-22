@@ -4,6 +4,7 @@ const cors = require('cors');
 const connectDB = require('./config/db');
 const foodRoutes = require('./routes/foodRoutes');
 const lineRoutes = require('./routes/lineRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ルーティング適用 (/api/upload-food や /api/get-foods に繋がる)
 app.use('/api', foodRoutes);
+app.use('/api/user', userRoutes);
 
 
 // PORT開放
