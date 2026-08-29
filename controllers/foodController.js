@@ -1,5 +1,4 @@
 const Food = require('../models/Food');
-const Food = require('../models/Food');
 const User = require('../models/User');
 const { sendExpirationNotice } = require('../utils/lineNotifier');
 
