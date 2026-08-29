@@ -13,4 +13,6 @@ router.get('/get-foods', checkAuth, foodController.getFoods);
 // POST: リセット
 router.post('/reset', checkAuth, foodController.resetFoods);
 
+router.get('/check-expirations', foodController.checkAndNotifyExpirations);
+
 module.exports = router;

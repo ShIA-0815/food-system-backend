@@ -1,4 +1,7 @@
 const Food = require('../models/Food');
+const Food = require('../models/Food');
+const User = require('../models/User');
+const { sendExpirationNotice } = require('../utils/lineNotifier');
 
 // 食材の保存（アップロード）
 exports.uploadFood = async (req, res) => {
@@ -82,5 +85,40 @@ exports.resetFoods = async (req, res) => {
         res.json({ message: "All reset" });
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+};
+
+exports.checkAndNotifyExpirations = async (req, res) => {
+    try {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // 全食材データを取得
+        const foods = await Food.find({});
+
+        for (const food of foods) {
+            if (!food.expiration_date) continue;
+
+            const expDate = new Date(food.expiration_date);
+            expDate.setHours(0, 0, 0, 0);
+
+            // 残り日数を計算
+            const diffTime = expDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            // 設定された通知日数（notifyDaysBefore）と一致する場合
+            if (diffDays === food.notifyDaysBefore) {
+                // その食材の持ち主の LINE User ID を取得
+                const user = await User.findOne({ userId: food.userId });
+                if (user && user.lineUserId) {
+                    await sendExpirationNotice(user.lineUserId, food.food_name, diffDays);
+                }
+            }
+        }
+
+        res.json({ ok: true, message: 'Expiration check completed' });
+    } catch (error) {
+        console.error('Check error:', error);
+        res.status(500).json({ ok: false, message: 'Server error' });
     }
 };
