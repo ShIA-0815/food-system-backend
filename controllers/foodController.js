@@ -87,6 +87,24 @@ exports.resetFoods = async (req, res) => {
     }
 };
 
+exports.deleteFood = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // 該当のIDの食材をDBから削除
+        const deletedFood = await Food.findByIdAndDelete(id);
+
+        if (!deletedFood) {
+            return res.status(404).json({ message: 'target of food not found' });
+        }
+
+        res.status(200).json({ message: 'complete delete', id });
+    } catch (error) {
+        console.error('Delete food error:', error);
+        res.status(500).json({ message: 'failed to delete', error: error.message });
+    }
+};
+
 exports.checkAndNotifyExpirations = async (req, res) => {
     try {
         const today = new Date();
