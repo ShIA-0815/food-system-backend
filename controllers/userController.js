@@ -11,11 +11,7 @@ exports.generateLinkCode = async (req, res) => {
         const linkCode = Math.floor(1000 + Math.random() * 9000).toString();
 
         // 既存ユーザーを更新、いなければ新規作成（upsert）
-        const user = await User.findOneAndUpdate(
-            { userId: userId },
-            { linkCode: linkCode },
-            { new: true, upsert: true }
-        );
+        const user = await User.findOneAndUpdate({ linkCode }, { lineUserId }, { returnDocument: 'after' });
 
         res.json({
             ok: true,

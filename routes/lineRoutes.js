@@ -38,7 +38,8 @@ async function handleEvent(event) {
             // DBからその連携コードを持つユーザーを探して lineUserId を保存
             const user = await User.findOneAndUpdate(
                 { linkCode: userText },
-                { lineUserId: lineUserId, linkCode: null } // 連携後はコードを消去
+                { lineUserId: lineUserId, linkCode: null }, // 連携後はコードを消去
+                { returnDocument: 'after' }
             );
 
             if (user) {
