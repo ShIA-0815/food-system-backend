@@ -21,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ルーティング適用 (/api/upload-food や /api/get-foods に繋がる)
-app.use('/api', foodRoutes);
+app.use('/api/food', foodRoutes);
 app.use('/api/user', userRoutes);
 
 
