@@ -5,6 +5,8 @@ const userSchema = new mongoose.Schema({
     lineUserId: { type: String, default: null },           // LINEのユーザーID
     linkCode: { type: String, default: null },             // 連携用の4桁コード
     created_at: { type: Date, default: Date.now }
+}, {
+    autoIndex: false
 });
 
 module.exports = mongoose.model('User', userSchema);
