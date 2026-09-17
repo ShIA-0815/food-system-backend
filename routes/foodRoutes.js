@@ -12,6 +12,8 @@ router.get('/get-foods', checkAuth, foodController.getFoods);
 
 // POST: リセット
 router.post('/reset', checkAuth, foodController.resetFoods);
+// DELETE: 食材登録解除
+router.delete('/delete-food/:id', checkAuth, foodController.deleteFood);
 
 router.get('/check-expirations', foodController.checkAndNotifyExpirations);
 
